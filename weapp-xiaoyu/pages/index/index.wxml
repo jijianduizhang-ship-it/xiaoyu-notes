@@ -1,0 +1,49 @@
+<view class="container">
+  <view class="header">
+    <view class="lang-switch" bindtap="goLanguage">
+      <text>{{currentLang}}</text>
+      <text class="arrow">›</text>
+    </view>
+    <view class="user-intro">
+      你好，我是정우성，我是一个大学生，喜欢各种校园话题，让我们一起探索这个校园吧！
+    </view>
+    <view class="partner" bindtap="changePartner">
+      <view class="partner-avatars">
+        <view class="avatar"></view>
+        <view class="avatar"></view>
+        <view class="avatar"></view>
+      </view>
+      <text class="partner-text">换语伴</text>
+    </view>
+  </view>
+
+  <view class="start-chat">
+    <view class="hi-tag">Hi</view>
+    <view class="btn-primary" bindtap="goChat">开始对话</view>
+  </view>
+
+  <view class="func-entry">
+    <view class="entry-item" bindtap="goCreative">
+      <text>创意广场</text>
+    </view>
+    <view class="entry-item" bindtap="goCustomScene">
+      <text>自定义场景</text>
+    </view>
+  </view>
+
+  <view class="scene-tags">
+    <view class="tag tag-active">热门</view>
+    <view class="tag tag-default">社交口语</view>
+    <view class="tag tag-default">大学生活</view>
+    <view class="tag tag-default">职场沟通</view>
+  </view>
+
+  <view class="scene-list">
+    <view class="card scene-item" wx:for="{{sceneList}}" wx:key="id" bindtap="onSceneTap" data-id="{{item.id}}">
+      <view class="scene-hot" wx:if="{{item.hot}}">🔥</view>
+      <view class="scene-title">{{item.title}}</view>
+      <view class="scene-desc">{{item.desc}}</view>
+      <view class="scene-data">{{item.count || 0}}人在学</view>
+    </view>
+  </view>
+</view>
