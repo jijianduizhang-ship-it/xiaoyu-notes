@@ -1,0 +1,36 @@
+<view class="container">
+  <view class="lang-title">语种选择</view>
+  <view class="lang-desc">请选择您想要练习的语言，开始与AI外教对话</view>
+
+  <view class="lang-list">
+    <view 
+      class="lang-item {{item.active ? 'active' : ''}}" 
+      wx:for="{{langList}}" 
+      wx:key="id" 
+      bindtap="selectLang" 
+      data-id="{{item.id}}"
+      data-name="{{item.name}}"
+    >
+      <text class="lang-flag">{{item.flag}}</text>
+      <text class="lang-name">{{item.name}}</text>
+    </view>
+  </view>
+
+  <view class="level-title">等级选择</view>
+  <view class="level-desc">AI外教将根据您的语言水平，选择合适的词汇与您对话</view>
+
+  <view class="level-list">
+    <view 
+      class="level-item {{item.id === currentLevel ? 'active' : ''}}" 
+      wx:for="{{levelList}}" 
+      wx:key="id" 
+      bindtap="selectLevel" 
+      data-id="{{item.id}}"
+    >
+      <view class="level-name">{{item.name}}</view>
+      <view class="level-desc-text">{{item.desc}}</view>
+    </view>
+  </view>
+
+  <view class="save-btn btn-primary" bindtap="saveSettings">保存设置</view>
+</view>
