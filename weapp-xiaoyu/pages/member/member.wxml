@@ -1,0 +1,68 @@
+<view class="container">
+  <view class="member-header">
+    <text class="member-title">语通Pro会员</text>
+  </view>
+
+  <view class="user-info-member" wx:if="{{userInfo}}">
+    <view class="user-avatar">
+      <image src="{{userInfo.avatar || 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0'}}" mode="aspectFill"></image>
+    </view>
+    <view class="user-detail">
+      <view class="user-name">{{userInfo.nickname || '用户'}}</view>
+      <view class="user-desc">{{isVip ? '会员到期：' + vipExpireTime : '成为Pro会员，畅聊学习提升'}}</view>
+    </view>
+  </view>
+
+  <view class="user-info-member" wx:else>
+    <view class="user-avatar">
+      <image src="https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0" mode="aspectFill"></image>
+    </view>
+    <view class="user-detail">
+      <view class="user-name">未登录</view>
+      <view class="user-desc">登录后享受更多功能</view>
+    </view>
+  </view>
+
+  <view class="package-title">会员套餐 口语提升 =(输入 + 输出)* 时间</view>
+
+  <view class="package-list">
+    <view 
+      class="package-item {{item.selected ? 'selected' : ''}}" 
+      wx:for="{{packageList}}" 
+      wx:key="id" 
+      bindtap="selectPackage"
+      data-id="{{item.id}}"
+    >
+      <view class="package-tag" wx:if="{{item.tag}}">{{item.tag}}</view>
+      <view class="package-name">{{item.name}}</view>
+      <view class="package-price">
+        <text class="price">¥{{item.price}}</text>
+        <text class="unit-price">¥{{item.monthPrice}}/月</text>
+      </view>
+      <view class="package-benefit">{{item.benefit}}</view>
+    </view>
+  </view>
+
+  <view class="vip-title">VIP权益</view>
+
+  <view class="vip-list">
+    <view class="vip-item" wx:for="{{vipList}}" wx:key="id">
+      <view class="vip-icon">
+        <text wx:if="{{item.icon === 'chat'}}">💬</text>
+        <text wx:elif="{{item.icon === 'global'}}">🌍</text>
+        <text wx:elif="{{item.icon === 'voice'}}">🎵</text>
+        <text wx:elif="{{item.icon === 'book'}}">📖</text>
+        <text wx:elif="{{item.icon === 'check'}}">✓</text>
+        <text wx:else>⭐</text>
+      </view>
+      <view class="vip-info">
+        <view class="vip-name">{{item.name}}</view>
+        <view class="vip-desc">{{item.desc}}</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="open-btn btn-primary" bindtap="onOpenVip">
+    {{isVip ? '已开通会员' : '¥ ' + (selectedPackage.price || 89) + ' 开通'}}
+  </view>
+</view>
