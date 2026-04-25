@@ -1,0 +1,24 @@
+<view class="container">
+  <view class="word-header">
+    <text class="word-title">单词书</text>
+    <text class="word-desc">选择单词书开始学习</text>
+  </view>
+
+  <view class="word-list">
+    <view class="card word-item" wx:for="{{wordList}}" wx:key="id" bindtap="onBookTap" data-id="{{item.id}}">
+      <view class="word-icon {{item.icon}}">
+        <text wx:if="{{item.icon === 'book'}}">📚</text>
+        <text wx:elif="{{item.icon === 'star'}}">⭐</text>
+        <text wx:elif="{{item.icon === 'fire'}}">🔥</text>
+        <text wx:elif="{{item.icon === 'file'}}">📄</text>
+        <text wx:else>📖</text>
+      </view>
+      <view class="word-info">
+        <view class="word-name">{{item.name}}</view>
+        <view class="word-desc">{{item.desc}}</view>
+        <view class="word-count">{{item.count || 0}} 词</view>
+      </view>
+      <view class="word-arrow">›</view>
+    </view>
+  </view>
+</view>
