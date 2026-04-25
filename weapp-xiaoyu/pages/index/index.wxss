@@ -1,0 +1,137 @@
+.header {
+  margin-bottom: 30rpx;
+}
+.lang-switch {
+  display: flex;
+  align-items: center;
+  font-size: 32rpx;
+  color: #333;
+  margin-bottom: 20rpx;
+}
+.arrow {
+  margin-left: 10rpx;
+  color: #999;
+}
+.user-intro {
+  font-size: 28rpx;
+  color: #333;
+  line-height: 1.6;
+  margin-bottom: 20rpx;
+  padding: 20rpx;
+  background: #F8F8F8;
+  border-radius: 12rpx;
+}
+.partner {
+  display: flex;
+  align-items: center;
+  padding: 10rpx 0;
+}
+.partner-avatars {
+  display: flex;
+}
+.avatar {
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  margin-right: -16rpx;
+  border: 2rpx solid #fff;
+}
+.partner-text {
+  font-size: 26rpx;
+  color: #666;
+  margin-left: 20rpx;
+}
+.start-chat {
+  position: relative;
+  margin-bottom: 30rpx;
+  text-align: center;
+  padding: 40rpx 0;
+}
+.hi-tag {
+  background: #E6F7F2;
+  color: #00C896;
+  padding: 8rpx 24rpx;
+  border-radius: 20rpx;
+  font-size: 24rpx;
+  display: inline-block;
+  margin-bottom: 20rpx;
+}
+.btn-primary {
+  background: linear-gradient(135deg, #00C896, #00A878);
+  color: #fff;
+  padding: 24rpx 60rpx;
+  border-radius: 50rpx;
+  font-size: 32rpx;
+  display: inline-block;
+  box-shadow: 0 8rpx 24rpx rgba(0, 200, 150, 0.3);
+}
+.func-entry {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 30rpx;
+}
+.entry-item {
+  width: 48%;
+  background: #fff;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4rpx 20rpx rgba(0,0,0,0.05);
+}
+.entry-item text {
+  font-size: 28rpx;
+  color: #333;
+}
+.entry-item:active {
+  opacity: 0.8;
+  transform: scale(0.98);
+}
+.scene-tags {
+  display: flex;
+  margin-bottom: 20rpx;
+  flex-wrap: wrap;
+  gap: 16rpx;
+}
+.tag {
+  padding: 10rpx 24rpx;
+  border-radius: 30rpx;
+  font-size: 24rpx;
+  background: #F5F5F5;
+  color: #666;
+}
+.tag-active {
+  background: #00C896;
+  color: #fff;
+}
+.scene-list {
+  padding-bottom: 120rpx;
+}
+.scene-item {
+  margin-bottom: 20rpx;
+  position: relative;
+}
+.scene-hot {
+  position: absolute;
+  top: 20rpx;
+  right: 20rpx;
+  font-size: 24rpx;
+}
+.scene-title {
+  font-size: 32rpx;
+  color: #333;
+  font-weight: 500;
+  margin-bottom: 12rpx;
+}
+.scene-desc {
+  font-size: 26rpx;
+  color: #666;
+  margin-bottom: 12rpx;
+  line-height: 1.5;
+}
+.scene-data {
+  font-size: 24rpx;
+  color: #999;
+}
