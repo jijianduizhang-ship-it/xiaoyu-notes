@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>小语笔记 - 管理后台</title>
+  <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    :root { --sidebar-width: 220px; }
+    body { background: #f5f6fa; }
+    .sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: var(--sidebar-width); background: linear-gradient(180deg, #667eea 0%, #764ba2 100%); padding: 20px 0; z-index: 1000; }
+    .sidebar h4 { color: white; text-align: center; padding: 10px 20px; margin-bottom: 30px; }
+    .sidebar a { color: rgba(255,255,255,0.8); padding: 12px 20px; display: block; text-decoration: none; transition: all 0.3s; }
+    .sidebar a:hover, .sidebar a.active { color: white; background: rgba(255,255,255,0.2); }
+    .sidebar a i { width: 24px; }
+    .main { margin-left: var(--sidebar-width); padding: 20px; min-height: 100vh; }
+    .header { background: white; padding: 15px 25px; border-radius: 10px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+    .stat-card { background: white; border-radius: 10px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+    .stat-card h3 { font-size: 28px; margin: 0; color: #333; }
+    .stat-card p { margin: 5px 0 0; color: #888; font-size: 14px; }
+    .stat-card .icon { font-size: 36px; color: #667eea; }
+    .content-card { background: white; border-radius: 10px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+    .table-responsive { overflow-x: auto; }
+    .btn-sm { padding: 4px 12px; font-size: 12px; }
+    .modal-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+    .modal-header .btn-close { filter: invert(1); }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <h4>🔔 小语笔记</h4>
+    <a href="#" class="active" data-page="dashboard"><i class="fas fa-home"></i> 仪表盘</a>
+    <a href="#" data-page="users"><i class="fas fa-users"></i> 用户管理</a>
+    <a href="#" data-page="scenes"><i class="fas fa-comments"></i> 场景管理</a>
+    <a href="#" data-page="courses"><i class="fas fa-book"></i> 课程管理</a>
+    <a href="#" data-page="wordbooks"><i class="fas fa-spell-check"></i> 单词书</a>
+    <a href="#" data-page="packages"><i class="fas fa-crown"></i> 会员套餐</a>
+    <a href="#" data-page="messages"><i class="fas fa-comment-dots"></i> 聊天记录</a>
+    <a href="#" data-page="aiconfig"><i class="fas fa-robot"></i> AI配置</a>
+    <a href="#" id="logout"><i class="fas fa-sign-out-alt"></i> 退出登录</a>
+  </div>
+
+  <div class="main">
+    <div class="header">
+      <h5 class="mb-0">管理后台</h5>
+      <div>
+        <span class="me-3" id="currentUser"></span>
+        <a href="/" class="btn btn-sm btn-outline-secondary"><i class="fas fa-external-link-alt"></i> 返回前台</a>
+      </div>
+    </div>
+
+    <!-- 仪表盘 -->
+    <div id="page-dashboard" class="page-content">
+      <div class="row g-4 mb-4">
+        <div class="col-md-3">
+          <div class="stat-card">
+            <div class="d-flex justify-content-between">
+              <div><h3 id="usersCount">0</h3><p>用户总数</p></div>
+              <i class="fas fa-users icon"></i>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stat-card">
+            <div class="d-flex justify-content-between">
+              <div><h3 id="todayUsers">0</h3><p>今日新增</p></div>
+              <i class="fas fa-user-plus icon"></i>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stat-card">
+            <div class="d-flex justify-content-between">
+              <div><h3 id="vipUsers">0</h3><p>VIP会员</p></div>
+              <i class="fas fa-crown icon"></i>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stat-card">
+            <div class="d-flex justify-content-between">
+              <div><h3 id="totalMinutes">0</h3><p>累计学习(分钟)</p></div>
+              <i class="fas fa-clock icon"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="stat-card text-center"><h3 id="scenesCount">0</h3><p>场景数</p></div>
+        </div>
+        <div class="col-md-4">
+          <div class="stat-card text-center"><h3 id="coursesCount">0</h3><p>课程数</p></div>
+        </div>
+        <div class="col-md-4">
+          <div class="stat-card text-center"><h3 id="messagesCount">0</h3><p>聊天记录</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 用户管理 -->
+    <div id="page-users" class="page-content" style="display:none;">
+      <div class="content-card">
+        <div class="d-flex justify-content-between mb-3">
+          <h5>用户列表</h5>
+          <input type="text" id="userSearch" placeholder="搜索昵称/openid" class="form-control" style="width:200px;">
+        </div>
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead><tr><th>ID</th><th>昵称</th><th>语言</th><th>等级</th><th>VIP</th><th>学习时长</th><th>注册时间</th></tr></thead>
+            <tbody id="usersTable"></tbody>
+          </table>
+        </div>
+        <nav><ul class="pagination justify-content-center" id="usersPagination"></ul></nav>
+      </div>
+    </div>
+
+    <!-- 场景管理 -->
+    <div id="page-scenes" class="page-content" style="display:none;">
+      <div class="content-card">
+        <div class="d-flex justify-content-between mb-3">
+          <h5>场景列表</h5>
+          <button class="btn btn-primary btn-sm" onclick="showSceneModal()"><i class="fas fa-plus"></i> 添加场景</button>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead><tr><th>ID</th><th>标题</th><th>描述</th><th>AI角色</th><th>语言</th><th>分类</th><th>热门</th><th>浏览</th><th>排序</th><th>操作</th></tr></thead>
+            <tbody id="scenesTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- 课程管理 -->
+    <div id="page-courses" class="page-content" style="display:none;">
+      <div class="content-card">
+        <div class="d-flex justify-content-between mb-3">
+          <h5>课程列表</h5>
+          <button class="btn btn-primary btn-sm" onclick="showCourseModal()"><i class="fas fa-plus"></i> 添加课程</button>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead><tr><th>ID</th><th>单元</th><th>名称</th><th>描述</th><th>天数</th><th>免费</th><th>语言</th><th>操作</th></tr></thead>
+            <tbody id="coursesTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- 单词书 -->
+    <div id="page-wordbooks" class="page-content" style="display:none;">
+      <div class="content-card">
+        <div class="d-flex justify-content-between mb-3">
+          <h5>单词书列表</h5>
+          <button class="btn btn-primary btn-sm" onclick="showWordBookModal()"><i class="fas fa-plus"></i> 添加单词书</button>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead><tr><th>ID</th><th>名称</th><th>描述</th><th>单词数</th><th>语言</th><th>图标</th><th>排序</th><th>操作</th></tr></thead>
+            <tbody id="wordBooksTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- 会员套餐 -->
+    <div id="page-packages" class="page-content" style="display:none;">
+      <div class="content-card">
+        <div class="d-flex justify-content-between mb-3">
+          <h5>会员套餐</h5>
+          <button class="btn btn-primary btn-sm" onclick="showPackageModal()"><i class="fas fa-plus"></i> 添加套餐</button>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead><tr><th>ID</th><th>名称</th><th>月数</th><th>价格</th><th>标签</th><th>权益</th><th>排序</th><th>状态</th><th>操作</th></tr></thead>
+            <tbody id="packagesTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- 聊天记录 -->
+    <div id="page-messages" class="page-content" style="display:none;">
+      <div class="content-card">
+        <div class="d-flex justify-content-between mb-3">
+          <h5>聊天记录</h5>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-hover table-sm">
+            <thead><tr><th>ID</th><th>用户</th><th>角色</th><th>语言</th><th>内容</th><th>时间</th></tr></thead>
+            <tbody id="messagesTable"></tbody>
+          </table>
+        </div>
+        <nav><ul class="pagination justify-content-center" id="messagesPagination"></ul></nav>
+      </div>
+    </div>
+
+    <!-- AI配置 -->
+    <div id="page-aiconfig" class="page-content" style="display:none;">
+      <div class="content-card">
+        <div class="d-flex justify-content-between mb-3">
+          <h5>AI模型配置</h5>
+          <button class="btn btn-primary btn-sm" onclick="showAiConfigModal()"><i class="fas fa-plus"></i> 添加配置</button>
+        </div>
+        <div class="alert alert-info">
+          <i class="fas fa-info-circle"></i> 默认配置将被小程序聊天功能使用，支持切换不同AI服务
+        </div>
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead><tr><th>ID</th><th>名称</th><th>API地址</th><th>API密钥</th><th>模型</th><th>默认</th><th>状态</th><th>排序</th><th>操作</th></tr></thead>
+            <tbody id="aiConfigsTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 通用Modal模板 -->
+  <div class="modal fade" id="editModal" tabindex="-1">
+    <div class="modal-dialog"><div class="modal-content" id="editModalContent"></div></div>
+  </div>
+
+  <script src="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const API_BASE = '/api/admin';
+    let token = localStorage.getItem('token');
+    if (!token) { window.location.href = 'index.html'; }
+
+    // 请求封装
+    async function api(url, options = {}) {
+      const res = await fetch(API_BASE + url, {
+        ...options,
+        headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json', ...options.headers }
+      });
+      return res.json();
+    }
+
+    // 页面切换
+    document.querySelectorAll('.sidebar a[data-page]').forEach(a => {
+      a.addEventListener('click', () => {
+        document.querySelectorAll('.sidebar a').forEach(x => x.classList.remove('active'));
+        a.classList.add('active');
+        document.querySelectorAll('.page-content').forEach(p => p.style.display = 'none');
+        document.getElementById('page-' + a.dataset.page).style.display = 'block';
+        loadPage(a.dataset.page);
+      });
+    });
+
+    document.getElementById('logout').addEventListener('click', () => { localStorage.clear(); window.location.href = 'index.html'; });
+    document.getElementById('currentUser').textContent = localStorage.getItem('username') || '';
+
+    function loadPage(page) {
+      switch(page) {
+        case 'dashboard': loadStats(); break;
+        case 'users': loadUsers(1); break;
+        case 'scenes': loadScenes(); break;
+        case 'courses': loadCourses(); break;
+        case 'wordbooks': loadWordBooks(); break;
+        case 'packages': loadPackages(); break;
+        case 'messages': loadMessages(1); break;
+        case 'aiconfig': loadAiConfigs(); break;
+      }
+    }
+
+    // 仪表盘
+    async function loadStats() {
+      const data = await api('/stats');
+      if (data.code === 200) {
+        document.getElementById('usersCount').textContent = data.data.usersCount;
+        document.getElementById('todayUsers').textContent = data.data.todayUsers;
+        document.getElementById('vipUsers').textContent = data.data.vipUsers;
+        document.getElementById('totalMinutes').textContent = data.data.totalMinutes;
+        document.getElementById('scenesCount').textContent = data.data.scenesCount;
+        document.getElementById('coursesCount').textContent = data.data.coursesCount;
+        document.getElementById('messagesCount').textContent = data.data.messagesCount;
+      }
+    }
+
+    // 用户列表
+    async function loadUsers(page) {
+      const keyword = document.getElementById('userSearch')?.value || '';
+      const data = await api(`/users?page=${page}&limit=20&keyword=${encodeURIComponent(keyword)}`);
+      if (data.code === 200) {
+        const tbody = document.getElementById('usersTable');
+        tbody.innerHTML = data.data.list.map(u => `<tr>
+          <td>${u.id}</td><td>${u.nickname || '-'}</td><td>${u.lang}</td><td>TOPIK ${u.level}</td>
+          <td>${u.is_vip ? '<span class="badge bg-success">VIP</span>' : '-'}</td>
+          <td>${u.total_minutes}分钟</td><td>${u.created_at}</td>
+        </tr>`).join('');
+        renderPagination('usersPagination', data.data.total, data.data.page, data.data.limit, loadUsers);
+      }
+    }
+    document.getElementById('userSearch')?.addEventListener('input', () => loadUsers(1));
+
+    // 场景管理
+    async function loadScenes() {
+      const data = await api('/scenes');
+      if (data.code === 200) {
+        document.getElementById('scenesTable').innerHTML = data.data.map(s => `<tr>
+          <td>${s.id}</td><td>${s.title}</td><td>${s.ai_name || '-'}</td><td>${s.lang || 'korean'}</td><td>${s.category || '-'}</td>
+          <td>${s.is_hot ? '<span class="badge bg-danger">热门</span>' : '-'}</td><td>${s.view_count || 0}</td>
+          <td>${s.sort}</td>
+          <td><button class="btn btn-sm btn-outline-primary" onclick='showSceneModal(${JSON.stringify(s)})'><i class="fas fa-edit"></i></button>
+          <button class="btn btn-sm btn-outline-danger" onclick="deleteScene(${s.id})"><i class="fas fa-trash"></i></button></td>
+        </tr>`).join('');
+      }
+    }
+
+    function showSceneModal(scene = {}) {
+      document.getElementById('editModalContent').innerHTML = `<div class="modal-header"><h5 class="modal-title">${scene.id ? '编辑' : '添加'}场景</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body"><form id="sceneForm">
+        <input type="hidden" name="id" value="${scene.id || ''}">
+        <div class="mb-2"><label class="form-label">标题</label><input type="text" class="form-control" name="title" value="${scene.title || ''}" required></div>
+        <div class="mb-2"><label class="form-label">描述</label><textarea class="form-control" name="description">${scene.description || ''}</textarea></div>
+        <div class="row"><div class="col-md-6 mb-2"><label class="form-label">AI角色名</label><input type="text" class="form-control" name="ai_name" value="${scene.ai_name || scene.title || ''}" placeholder="如：机场工作人员"></div><div class="col-md-6 mb-2"><label class="form-label">语言</label><select class="form-select" name="lang"><option value="korean" ${scene.lang==='korean'?'selected':''}>韩语</option><option value="japanese" ${scene.lang==='japanese'?'selected':''}>日语</option><option value="english" ${scene.lang==='english'?'selected':''}>英语</option></select></div></div>
+        <div class="mb-2"><label class="form-label">AI角色介绍</label><input type="text" class="form-control" name="ai_intro" value="${scene.ai_intro || ''}" placeholder="如：我是机场地勤人员"></div>
+        <div class="mb-2"><label class="form-label">欢迎语（外语）</label><input type="text" class="form-control" name="welcome_msg" value="${scene.welcome_msg || ''}" placeholder="如：안녕하세요!"></div>
+        <div class="mb-2"><label class="form-label">欢迎语（中文）</label><input type="text" class="form-control" name="welcome_cn" value="${scene.welcome_cn || ''}" placeholder="如：您好！"></div>
+        <div class="mb-2"><label class="form-label">分类</label><input type="text" class="form-control" name="category" value="${scene.category || ''}"></div>
+        <div class="mb-2"><label class="form-label">排序</label><input type="number" class="form-control" name="sort" value="${scene.sort || 0}"></div>
+        <div class="mb-2"><label class="form-check"><input type="checkbox" class="form-check-input" name="is_hot" ${scene.is_hot ? 'checked' : ''}> 热门</label></div>
+      </form></div><div class="modal-footer"><button class="btn btn-primary" onclick="saveScene()">保存</button></div>`;
+      new bootstrap.Modal(document.getElementById('editModal')).show();
+    }
+
+    async function saveScene() {
+      const form = document.getElementById('sceneForm');
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData);
+      data.is_hot = form.querySelector('[name=is_hot]').checked;
+      const id = data.id;
+      delete data.id;
+      const res = id ? await api(`/scenes/${id}`, { method: 'PUT', body: JSON.stringify(data) }) : await api('/scenes', { method: 'POST', body: JSON.stringify(data) });
+      if (res.code === 200) { bootstrap.Modal.getInstance(document.getElementById('editModal')).hide(); loadScenes(); }
+      else alert(res.msg);
+    }
+
+    async function deleteScene(id) { if (confirm('确认删除？')) { await api(`/scenes/${id}`, { method: 'DELETE' }); loadScenes(); } }
+
+    // 课程管理
+    async function loadCourses() {
+      const data = await api('/courses');
+      if (data.code === 200) {
+        document.getElementById('coursesTable').innerHTML = data.data.map(c => `<tr>
+          <td>${c.id}</td><td>${c.unit}</td><td>${c.name}</td><td>${c.description || '-'}</td><td>${c.day}</td>
+          <td>${c.is_free ? '<span class="badge bg-success">免费</span>' : '付费'}</td><td>${c.lang}</td>
+          <td><button class="btn btn-sm btn-outline-primary" onclick='showCourseModal(${JSON.stringify(c)})'><i class="fas fa-edit"></i></button>
+          <button class="btn btn-sm btn-outline-danger" onclick="deleteCourse(${c.id})"><i class="fas fa-trash"></i></button></td>
+        </tr>`).join('');
+      }
+    }
+
+    function showCourseModal(course = {}) {
+      document.getElementById('editModalContent').innerHTML = `<div class="modal-header"><h5 class="modal-title">${course.id ? '编辑' : '添加'}课程</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body"><form id="courseForm">
+        <input type="hidden" name="id" value="${course.id || ''}">
+        <div class="mb-2"><label class="form-label">单元</label><input type="text" class="form-control" name="unit" value="${course.unit || ''}" required></div>
+        <div class="mb-2"><label class="form-label">名称</label><input type="text" class="form-control" name="name" value="${course.name || ''}" required></div>
+        <div class="mb-2"><label class="form-label">描述</label><textarea class="form-control" name="description">${course.description || ''}</textarea></div>
+        <div class="mb-2"><label class="form-label">所需天数</label><input type="number" class="form-control" name="day" value="${course.day || 1}"></div>
+        <div class="mb-2"><label class="form-label">语言</label><select class="form-select" name="lang"><option value="korean" ${course.lang==='korean'?'selected':''}>韩语</option><option value="japanese" ${course.lang==='japanese'?'selected':''}>日语</option><option value="english" ${course.lang==='english'?'selected':''}>英语</option></select></div>
+        <div class="mb-2"><label class="form-check"><input type="checkbox" class="form-check-input" name="is_free" ${course.is_free ? 'checked' : ''}> 免费</label></div>
+      </form></div><div class="modal-footer"><button class="btn btn-primary" onclick="saveCourse()">保存</button></div>`;
+      new bootstrap.Modal(document.getElementById('editModal')).show();
+    }
+
+    async function saveCourse() {
+      const form = document.getElementById('courseForm');
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData);
+      data.is_free = form.querySelector('[name=is_free]').checked;
+      data.day = parseInt(data.day);
+      const id = data.id; delete data.id;
+      const res = id ? await api(`/courses/${id}`, { method: 'PUT', body: JSON.stringify(data) }) : await api('/courses', { method: 'POST', body: JSON.stringify(data) });
+      if (res.code === 200) { bootstrap.Modal.getInstance(document.getElementById('editModal')).hide(); loadCourses(); }
+      else alert(res.msg);
+    }
+
+    async function deleteCourse(id) { if (confirm('确认删除？')) { await api(`/courses/${id}`, { method: 'DELETE' }); loadCourses(); } }
+
+    // 单词书管理
+    async function loadWordBooks() {
+      const data = await api('/wordbooks');
+      if (data.code === 200) {
+        document.getElementById('wordBooksTable').innerHTML = data.data.map(b => `<tr>
+          <td>${b.id}</td><td>${b.name}</td><td>${b.description || '-'}</td><td>${b.word_count}</td><td>${b.lang}</td><td>${b.icon}</td><td>${b.sort}</td>
+          <td><button class="btn btn-sm btn-outline-primary" onclick='showWordBookModal(${JSON.stringify(b)})'><i class="fas fa-edit"></i></button>
+          <button class="btn btn-sm btn-outline-danger" onclick="deleteWordBook(${b.id})"><i class="fas fa-trash"></i></button></td>
+        </tr>`).join('');
+      }
+    }
+
+    function showWordBookModal(book = {}) {
+      document.getElementById('editModalContent').innerHTML = `<div class="modal-header"><h5 class="modal-title">${book.id ? '编辑' : '添加'}单词书</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body"><form id="wbForm">
+        <input type="hidden" name="id" value="${book.id || ''}">
+        <div class="mb-2"><label class="form-label">名称</label><input type="text" class="form-control" name="name" value="${book.name || ''}" required></div>
+        <div class="mb-2"><label class="form-label">描述</label><textarea class="form-control" name="description">${book.description || ''}</textarea></div>
+        <div class="mb-2"><label class="form-label">单词数</label><input type="number" class="form-control" name="word_count" value="${book.word_count || 0}"></div>
+        <div class="mb-2"><label class="form-label">语言</label><select class="form-select" name="lang"><option value="korean">韩语</option></select></div>
+        <div class="mb-2"><label class="form-label">图标</label><input type="text" class="form-control" name="icon" value="${book.icon || 'book'}"></div>
+        <div class="mb-2"><label class="form-label">排序</label><input type="number" class="form-control" name="sort" value="${book.sort || 0}"></div>
+      </form></div><div class="modal-footer"><button class="btn btn-primary" onclick="saveWordBook()">保存</button></div>`;
+      new bootstrap.Modal(document.getElementById('editModal')).show();
+    }
+
+    async function saveWordBook() {
+      const form = document.getElementById('wbForm');
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData);
+      data.word_count = parseInt(data.word_count);
+      data.sort = parseInt(data.sort);
+      const id = data.id; delete data.id;
+      const res = id ? await api(`/wordbooks/${id}`, { method: 'PUT', body: JSON.stringify(data) }) : await api('/wordbooks', { method: 'POST', body: JSON.stringify(data) });
+      if (res.code === 200) { bootstrap.Modal.getInstance(document.getElementById('editModal')).hide(); loadWordBooks(); }
+      else alert(res.msg);
+    }
+
+    async function deleteWordBook(id) { if (confirm('确认删除？')) { await api(`/wordbooks/${id}`, { method: 'DELETE' }); loadWordBooks(); } }
+
+    // 会员套餐
+    async function loadPackages() {
+      const data = await api('/packages');
+      if (data.code === 200) {
+        document.getElementById('packagesTable').innerHTML = data.data.map(p => `<tr>
+          <td>${p.id}</td><td>${p.name}</td><td>${p.months}月</td><td>¥${p.price}</td><td>${p.tag || '-'}</td><td>${p.benefit || '-'}</td><td>${p.sort}</td>
+          <td>${p.status ? '<span class="badge bg-success">上架</span>' : '<span class="badge bg-secondary">下架</span>'}</td>
+          <td><button class="btn btn-sm btn-outline-primary" onclick='showPackageModal(${JSON.stringify(p)})'><i class="fas fa-edit"></i></button>
+          <button class="btn btn-sm btn-outline-danger" onclick="deletePackage(${p.id})"><i class="fas fa-trash"></i></button></td>
+        </tr>`).join('');
+      }
+    }
+
+    function showPackageModal(pkg = {}) {
+      document.getElementById('editModalContent').innerHTML = `<div class="modal-header"><h5 class="modal-title">${pkg.id ? '编辑' : '添加'}套餐</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body"><form id="pkgForm">
+        <input type="hidden" name="id" value="${pkg.id || ''}">
+        <div class="mb-2"><label class="form-label">名称</label><input type="text" class="form-control" name="name" value="${pkg.name || ''}" required></div>
+        <div class="mb-2"><label class="form-label">月数</label><input type="number" class="form-control" name="months" value="${pkg.months || 1}"></div>
+        <div class="mb-2"><label class="form-label">价格(元)</label><input type="number" class="form-control" name="price" value="${pkg.price || 0}" step="0.01"></div>
+        <div class="mb-2"><label class="form-label">标签</label><input type="text" class="form-control" name="tag" value="${pkg.tag || ''}"></div>
+        <div class="mb-2"><label class="form-label">权益说明</label><input type="text" class="form-control" name="benefit" value="${pkg.benefit || ''}"></div>
+        <div class="mb-2"><label class="form-label">排序</label><input type="number" class="form-control" name="sort" value="${pkg.sort || 0}"></div>
+      </form></div><div class="modal-footer"><button class="btn btn-primary" onclick="savePackage()">保存</button></div>`;
+      new bootstrap.Modal(document.getElementById('editModal')).show();
+    }
+
+    async function savePackage() {
+      const form = document.getElementById('pkgForm');
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData);
+      data.months = parseInt(data.months);
+      data.price = parseFloat(data.price);
+      data.sort = parseInt(data.sort);
+      const id = data.id; delete data.id;
+      const res = id ? await api(`/packages/${id}`, { method: 'PUT', body: JSON.stringify(data) }) : await api('/packages', { method: 'POST', body: JSON.stringify(data) });
+      if (res.code === 200) { bootstrap.Modal.getInstance(document.getElementById('editModal')).hide(); loadPackages(); }
+      else alert(res.msg);
+    }
+
+    async function deletePackage(id) { if (confirm('确认删除？')) { await api(`/packages/${id}`, { method: 'DELETE' }); loadPackages(); } }
+
+    // 聊天记录
+    async function loadMessages(page) {
+      const data = await api(`/messages?page=${page}&limit=50`);
+      if (data.code === 200) {
+        document.getElementById('messagesTable').innerHTML = data.data.list.map(m => `<tr>
+          <td>${m.id}</td><td>${m.nickname || m.user_id}</td><td>${m.role === 'user' ? '<span class="badge bg-primary">用户</span>' : '<span class="badge bg-success">AI</span>'}</td>
+          <td>${m.lang}</td><td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${m.content}</td><td>${m.created_at}</td>
+        </tr>`).join('');
+        renderPagination('messagesPagination', data.data.total, data.data.page, data.data.limit, loadMessages);
+      }
+    }
+
+    // 分页
+    function renderPagination(elId, total, page, limit, callback) {
+      const pages = Math.ceil(total / limit);
+      let html = '';
+      if (pages > 1) {
+        for (let i = 1; i <= pages; i++) {
+          if (i === page) html += `<li class="page-item active"><a class="page-link" href="#">${i}</a></li>`;
+          else html += `<li class="page-item"><a class="page-link" href="#" onclick="event.preventDefault();${callback.name}(${i})">${i}</a></li>`;
+        }
+      }
+      document.getElementById(elId).innerHTML = html;
+    }
+
+    // AI配置管理
+    async function loadAiConfigs() {
+      const data = await api('/ai-configs');
+      if (data.code === 200) {
+        document.getElementById('aiConfigsTable').innerHTML = data.data.map(c => `<tr>
+          <td>${c.id}</td><td>${c.name}</td><td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${c.api_base}</td>
+          <td><code>${c.api_key}</code></td><td>${c.model}</td>
+          <td>${c.is_default ? '<span class="badge bg-success">默认</span>' : '-'}</td>
+          <td>${c.status ? '<span class="badge bg-success">启用</span>' : '<span class="badge bg-secondary">禁用</span>'}</td>
+          <td>${c.sort}</td>
+          <td>
+            <button class="btn btn-sm btn-outline-primary" onclick='showAiConfigModal(${JSON.stringify(c).replace(/'/g, "\\'")})'><i class="fas fa-edit"></i></button>
+            <button class="btn btn-sm btn-outline-danger" onclick="deleteAiConfig(${c.id})"><i class="fas fa-trash"></i></button>
+            ${!c.is_default ? `<button class="btn btn-sm btn-outline-success" onclick="setDefaultAiConfig(${c.id})"><i class="fas fa-star"></i></button>` : ''}
+          </td>
+        </tr>`).join('');
+      }
+    }
+
+    function showAiConfigModal(config = {}) {
+      document.getElementById('editModalContent').innerHTML = `<div class="modal-header"><h5 class="modal-title">${config.id ? '编辑' : '添加'}AI配置</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body"><form id="aiConfigForm">
+        <input type="hidden" name="id" value="${config.id || ''}">
+        <div class="mb-2"><label class="form-label">配置名称</label><input type="text" class="form-control" name="name" value="${config.name || ''}" required placeholder="如：MiniMax生产环境"></div>
+        <div class="mb-2"><label class="form-label">API地址</label><input type="text" class="form-control" name="api_base" value="${config.api_base || 'https://api.minimax.chat/v1'}" required placeholder="如：https://api.minimax.chat/v1"></div>
+        <div class="mb-2"><label class="form-label">API密钥</label><input type="text" class="form-control" name="api_key" value="${config.api_key || ''}" ${config.id ? 'placeholder="不修改请留空"' : 'required'}></div>
+        <div class="mb-2"><label class="form-label">模型名称</label><input type="text" class="form-control" name="model" value="${config.model || 'abab6.5s-chat'}" placeholder="如：abab6.5s-chat"></div>
+        <div class="mb-2"><label class="form-label">排序</label><input type="number" class="form-control" name="sort" value="${config.sort || 0}"></div>
+        <div class="mb-2"><label class="form-check"><input type="checkbox" class="form-check-input" name="is_default" ${config.is_default ? 'checked' : ''}> 设为默认</label></div>
+      </form></div><div class="modal-footer"><button class="btn btn-primary" onclick="saveAiConfig()">保存</button></div>`;
+      new bootstrap.Modal(document.getElementById('editModal')).show();
+    }
+
+    async function saveAiConfig() {
+      const form = document.getElementById('aiConfigForm');
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData);
+      data.is_default = form.querySelector('[name=is_default]').checked;
+      data.sort = parseInt(data.sort) || 0;
+      const id = data.id;
+      delete data.id;
+      const res = id ? await api(`/ai-configs/${id}`, { method: 'PUT', body: JSON.stringify(data) }) : await api('/ai-configs', { method: 'POST', body: JSON.stringify(data) });
+      if (res.code === 200) { bootstrap.Modal.getInstance(document.getElementById('editModal')).hide(); loadAiConfigs(); }
+      else alert(res.msg);
+    }
+
+    async function deleteAiConfig(id) { if (confirm('确认删除？')) { await api(`/ai-configs/${id}`, { method: 'DELETE' }); loadAiConfigs(); } }
+
+    async function setDefaultAiConfig(id) {
+      const formData = { is_default: true, status: 1 };
+      const res = await api(`/ai-configs/${id}`, { method: 'PUT', body: JSON.stringify(formData) });
+      if (res.code === 200) loadAiConfigs();
+      else alert(res.msg);
+    }
+
+    // 初始化
+    loadPage('dashboard');
+  </script>
+</body>
+</html>
