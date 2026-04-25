@@ -1,0 +1,111 @@
+<view class="container">
+  <!-- 顶部导航栏 -->
+  <view class="nav-bar">
+    <view class="nav-back" bindtap="onBack">
+      <text>‹</text>
+    </view>
+    <view class="nav-title">{{sceneTitle}}</view>
+    <view class="nav-more" bindtap="onMore">
+      <text>···</text>
+    </view>
+  </view>
+
+  <!-- AI角色信息 -->
+  <view class="ai-info" wx:if="{{aiName && aiName !== 'AI'}}">
+    <view class="ai-avatar-small">{{aiName}}</view>
+    <view class="ai-intro">{{aiIntro}}</view>
+  </view>
+
+  <!-- VIP提示 -->
+  <view class="vip-banner" wx:if="{{!isVip && remainMinutes <= 1}}">
+    <text>免费对话时长即将用完，开通会员无限使用 ›</text>
+  </view>
+
+  <!-- 聊天区域 -->
+  <view class="chat-wrap">
+    <scroll-view 
+      class="chat-content" 
+      scroll-y 
+      scroll-top="{{scrollTop}}"
+      scroll-into-view="{{scrollIntoView}}"
+      bindscrolltoupper="onScrollUpper"
+      enhanced="{{true}}"
+      show-scrollbar="{{false}}"
+    >
+      <view class="load-more" wx:if="{{loadingMore}}">
+        <text>加载中...</text>
+      </view>
+      
+      <view class="messages" id="messages">
+        <view class="welcome-tip" wx:if="{{showWelcome}}">
+          <text>👋 {{welcomeTip}}</text>
+        </view>
+        
+        <block wx:for="{{messages}}" wx:key="id">
+          <!-- 用户消息 -->
+          <view class="msg-item msg-send" id="msg-{{item.id}}">
+            <view class="msg-bubble send-bubble">
+              <text class="msg-text">{{item.text}}</text>
+            </view>
+            <view class="msg-avatar my-avatar">
+              <text wx:if="{{!userInfo || !userInfo.avatar}}">我</text>
+              <image wx:elif="{{userInfo.avatar}}" src="{{userInfo.avatar}}" mode="aspectFill"/>
+            </view>
+          </view>
+          
+          <!-- AI回复 -->
+          <view class="msg-item msg-receive" id="msg-{{item.id}}">
+            <view class="msg-avatar ai-avatar">
+              <text>{{aiName}}</text>
+            </view>
+            <view class="msg-bubble receive-bubble">
+              <text class="msg-text-kr">{{item.text}}</text>
+              <text class="msg-text-cn" wx:if="{{item.cn}}">{{item.cn}}</text>
+            </view>
+          </view>
+        </block>
+        
+        <view class="msg-item msg-receive" wx:if="{{sending}}">
+          <view class="msg-avatar ai-avatar"><text>{{aiName}}</text></view>
+          <view class="msg-bubble receive-bubble">
+            <text class="thinking">AI思考中...</text>
+          </view>
+        </view>
+      </view>
+    </scroll-view>
+
+    <view class="ai-tip" wx:if="{{messages.length > 1}}">
+      <text>内容由AI大模型生成</text>
+    </view>
+  </view>
+
+  <!-- 输入区域 -->
+  <view class="input-area">
+    <view class="func-bar" wx:if="{{showFuncBar}}">
+      <view class="func-item" bindtap="onVoiceInput">
+        <text>🎤</text>
+        <text class="func-label">语音</text>
+      </view>
+      <view class="func-item" bindtap="onClearChat">
+        <text>🗑️</text>
+        <text class="func-label">清空</text>
+      </view>
+    </view>
+    
+    <view class="input-row">
+      <view class="more-btn" bindtap="toggleFuncBar">+</view>
+      <input 
+        class="chat-input" 
+        type="text" 
+        value="{{inputText}}"
+        placeholder="输入你想说的话..."
+        bindinput="onInput"
+        bindconfirm="onSend"
+        confirm-type="send"
+      />
+      <view class="send-btn {{canSend ? 'active' : ''}}" bindtap="onSend">
+        <text>发送</text>
+      </view>
+    </view>
+  </view>
+</view>
